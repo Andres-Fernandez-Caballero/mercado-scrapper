@@ -1,0 +1,21 @@
+{
+  "name": "mercado-scrapper",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "node test/mercadoScraper.test.js"
+  },
+  "keywords": [
+    "scrapper",
+    "mercadolibre",
+    "puppeteer"
+  ],
+  "author": "Andres Fernandez",
+  "license": "ISC",
+  "description": "A web scraper for MercadoLibre car listings",
+  "dependencies": {
+    "@sparticuz/chromium": "^133.0.0",
+    "puppeteer": "^24.6.1",
+    "puppeteer-core": "^24.6.1"
+  }
+}
