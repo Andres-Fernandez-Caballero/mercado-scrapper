@@ -1,22 +1,29 @@
-const chromium = require('@sparticuz/chromium');
+import chromium from '@sparticuz/chromium';
+import { Browser, Page } from 'puppeteer-core';
+
+interface CarListing {
+    titulo: string;
+    simbolo: string;
+    precio: string;
+}
 
 async function getPuppeteerAndOptions() {
     const isLocal = !process.env.VERCEL;
     let puppeteer;
-    let launchOptions;
+    let launchOptions: any;
 
     if (isLocal) {
-        puppeteer = require('puppeteer'); // Puppeteer completo local
+        puppeteer = require('puppeteer');
         launchOptions = {
             headless: true,
             args: ['--no-sandbox', '--disable-setuid-sandbox'],
         };
     } else {
-        puppeteer = require('puppeteer-core'); // En serverless
+        puppeteer = require('puppeteer-core');
         launchOptions = {
             args: chromium.args,
             defaultViewport: chromium.defaultViewport,
-            executablePath: await chromium.executablePath(), // Solo se llama si NO estás en local
+            executablePath: await chromium.executablePath(),
             headless: chromium.headless,
         };
     }
@@ -24,17 +31,17 @@ async function getPuppeteerAndOptions() {
     return { puppeteer, launchOptions };
 }
 
-async function scrapeMercadoLibre(producto) {
+export async function scrapeMercadoLibre(producto: string): Promise<CarListing[]> {
     if (!producto || typeof producto !== 'string') {
         throw new Error('Producto debe ser una cadena de texto válida');
     }
 
     const { puppeteer, launchOptions } = await getPuppeteerAndOptions();
-
-    const browser = await puppeteer.launch(launchOptions);
+    let browser: Browser | null = null;
 
     try {
-        const page = await browser.newPage();
+        browser = await puppeteer.launch(launchOptions);
+        const page: Page = await browser!.newPage();
         const BASE_URL = 'https://autos.mercadolibre.com.ar';
         const query = producto.trim().replace(/\s+/g, '-');
         const url = `${BASE_URL}/${query}`;
@@ -44,15 +51,15 @@ async function scrapeMercadoLibre(producto) {
             timeout: 30000,
         });
 
-        if (!response.ok()) {
-            throw new Error(`Error al cargar la página: ${response.status()}`);
+        if (!response?.ok()) {
+            throw new Error(`Error al cargar la página: ${response?.status()}`);
         }
 
         await page.waitForSelector('.ui-search-layout__item', { timeout: 10000 });
 
         const preciosNoPesos = await page.evaluate(() => {
             const items = Array.from(document.querySelectorAll('.ui-search-layout__item'));
-            const preciosFiltrados = [];
+            const preciosFiltrados: CarListing[] = [];
 
             items.forEach(item => {
                 const precioElem = item.querySelector('.andes-money-amount__fraction');
@@ -60,14 +67,13 @@ async function scrapeMercadoLibre(producto) {
                 const tituloElem = item.querySelector('.ui-search-item__title');
 
                 if (precioElem && simboloElem) {
-                    const simbolo = simboloElem.innerText;
-                    const precio = precioElem.innerText;
-                    const titulo = tituloElem ? tituloElem.innerText : 'Sin título';
-                    const objetoDatosAnuncio = {titulo, simbolo, precio};
+                    const simbolo = simboloElem.textContent || '';
+                    const precio = precioElem.textContent || '';
+                    const titulo = tituloElem ? tituloElem.textContent || 'Sin título' : 'Sin título';
 
                     if (simbolo.includes('U$S') || simbolo.includes('USD') || simbolo.includes('US') ||
                         simbolo.includes('€') || simbolo.includes('£')) {
-                        preciosFiltrados.push(objetoDatosAnuncio);
+                        preciosFiltrados.push({ titulo, simbolo, precio });
                     }
                 }
             });
@@ -77,8 +83,6 @@ async function scrapeMercadoLibre(producto) {
 
         return preciosNoPesos;
     } finally {
-        await browser.close();
+        if (browser) await browser.close();
     }
 }
-
-module.exports = { scrapeMercadoLibre };

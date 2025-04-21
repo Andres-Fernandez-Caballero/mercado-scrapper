@@ -1,21 +1,31 @@
 {
-  "name": "mercado-scrapper",
-  "version": "1.0.0",
-  "main": "index.js",
-  "scripts": {
-    "test": "node test/mercadoScraper.test.js"
-  },
-  "keywords": [
-    "scrapper",
-    "mercadolibre",
-    "puppeteer"
+  "name": "mercadolibre-car-scraper",
+  "version": "1.1.0",
+  "description": "TypeScript-based web scraper for MercadoLibre car listings with foreign currency prices",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
   ],
-  "author": "Andres Fernandez",
-  "license": "ISC",
-  "description": "A web scraper for MercadoLibre car listings",
+  "scripts": {
+    "build": "tsc",
+    "prepare": "npm run build",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": ["scraper", "mercadolibre", "puppeteer", "cars", "typescript"],
+  "author": "Your Name",
+  "license": "MIT",
   "dependencies": {
-    "@sparticuz/chromium": "^133.0.0",
-    "puppeteer": "^24.6.1",
-    "puppeteer-core": "^24.6.1"
+    "@sparticuz/chromium": "^119.0.0",
+    "puppeteer-core": "^21.5.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.8.0",
+    "@types/puppeteer": "^7.0.0",
+    "@types/puppeteer-core": "^7.0.0",
+    "typescript": "^5.0.0"
+  },
+  "peerDependencies": {
+    "puppeteer": "^21.5.0"
   }
 }
