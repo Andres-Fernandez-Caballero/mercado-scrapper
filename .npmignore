@@ -2,3 +2,8 @@ test/
 .github/
 .gitignore
 .env
+src/
+tsconfig.json
+*.log
+coverage/
+.vscode/
