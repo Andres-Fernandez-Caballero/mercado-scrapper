@@ -1,6 +1,6 @@
 {
   "name": "mercadolibre-car-scraper",
-  "version": "1.1.1",
+  "version": "1.2.0",
   "description": "TypeScript-based web scraper for MercadoLibre car listings with foreign currency prices",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
