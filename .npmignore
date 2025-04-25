@@ -1,9 +1,27 @@
+# Development files
+src/
 test/
+tsconfig.json
 .github/
 .gitignore
+.npmignore
 .env
-src/
-tsconfig.json
 *.log
-coverage/
+
+# IDE and Editor files
 .vscode/
+.idea/
+*.swp
+*.swo
+
+# Build and Coverage
+coverage/
+.nyc_output/
+*.tsbuildinfo
+
+# Dependency directories
+node_modules/
+
+# Misc
+.DS_Store
+Thumbs.db

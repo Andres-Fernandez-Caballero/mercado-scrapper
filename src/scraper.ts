@@ -5,6 +5,7 @@ interface CarListing {
     titulo: string;
     simbolo: string;
     precio: string;
+    frontImage: string;
 }
 
 async function getPuppeteerAndOptions() {
@@ -24,7 +25,7 @@ async function getPuppeteerAndOptions() {
             args: chromium.args,
             defaultViewport: chromium.defaultViewport,
             executablePath: await chromium.executablePath(),
-            headless: chromium.headless,
+            headless: 'true',
         };
     }
 
@@ -62,18 +63,20 @@ export async function scrapeMercadoLibre(producto: string): Promise<CarListing[]
             const preciosFiltrados: CarListing[] = [];
 
             items.forEach(item => {
+                const frontImageElem = item.querySelector('.poly-component__picture.poly-component__picture--contain');
                 const precioElem = item.querySelector('.andes-money-amount__fraction');
                 const simboloElem = item.querySelector('.andes-money-amount__currency-symbol');
-                const tituloElem = item.querySelector('.ui-search-item__title');
+                const tituloElem = item.querySelector('.poly-component__title');
 
                 if (precioElem && simboloElem) {
+                    const frontImage = frontImageElem ? (frontImageElem as HTMLImageElement).src : '';
                     const simbolo = simboloElem.textContent || '';
                     const precio = precioElem.textContent || '';
                     const titulo = tituloElem ? tituloElem.textContent || 'Sin título' : 'Sin título';
 
                     if (simbolo.includes('U$S') || simbolo.includes('USD') || simbolo.includes('US') ||
                         simbolo.includes('€') || simbolo.includes('£')) {
-                        preciosFiltrados.push({ titulo, simbolo, precio });
+                        preciosFiltrados.push({ titulo, simbolo, precio, frontImage });
                     }
                 }
             });
